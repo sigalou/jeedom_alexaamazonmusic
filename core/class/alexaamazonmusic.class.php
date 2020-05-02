@@ -192,12 +192,14 @@ class alexaamazonmusic extends eqLogic {
 				$type=$this->getConfiguration('type','');
 		if(!empty($capa)) {
 
+			$widgetEcho=($this->getConfiguration('devicetype') == "Echo");
 			$widgetPlayer=($this->getConfiguration('devicetype') == "Player");
 			$widgetSmarthome=($this->getConfiguration('devicetype') == "Smarthome");
 			$widgetPlaylist=($this->getConfiguration('devicetype') == "PlayList");
 
 			$cas1=(($this->hasCapaorFamilyorType("AUDIO_PLAYER")) && $widgetPlayer);
 			$cas1bis=(($this->hasCapaorFamilyorType("AUDIO_PLAYER")) && !$widgetPlayer);
+			$cas1ter=(($this->hasCapaorFamilyorType("AUDIO_PLAYER")) && !$this->hasCapaorFamilyorType("WHA"));
 			$cas2=(($this->hasCapaorFamilyorType("TIMERS_AND_ALARMS")) && !$widgetPlayer);
 			$cas3=(($this->hasCapaorFamilyorType("REMINDERS")) && !$widgetPlayer);
 			$cas4=(($this->hasCapaorFamilyorType("REMINDERS")) && !$widgetSmarthome);
@@ -205,6 +207,9 @@ class alexaamazonmusic extends eqLogic {
 			$cas6=($cas5 && (!$this->hasCapaorFamilyorType("WHA")));
 			$cas7=((!$this->hasCapaorFamilyorType("WHA")) && ($this->getConfiguration('devicetype') != "Player") &&(!$this->hasCapaorFamilyorType("FIRE_TV")) && !$widgetSmarthome && (!$this->hasCapaorFamilyorType("AMAZONMOBILEMUSIC_ANDROID")));
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
+			$cas9=($this->hasCapaorFamilyorType("WHA") && $widgetPlayer);
+
+
 			$false=false;
 			self::updateCmd ($F, 'subText2', 'info', 'string', false, null, true, false, null, null, 'alexaapi::subText2', null, null, null, 2, $cas1);
 			self::updateCmd ($F, 'subText1', 'info', 'string', false, null, true, false, null, null, 'alexaapi::title', null, null, null, 4, $cas1);			
@@ -214,12 +219,12 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'pause', 'action', 'other', false, 'Pause', true, true, 'fa fa-pause', null, null, 'command?command=pause', null, null, 17, $cas1);
 			self::updateCmd ($F, 'play', 'action', 'other', false, 'Play', true, true, 'fa fa-play', null, null, 'command?command=play', null, null, 18, $cas1);
 			self::updateCmd ($F, 'next', 'action', 'other', false, 'Next', true, true, 'fa fa-step-forward', null, null, 'command?command=next', null, null, 19, $cas1);
-			self::updateCmd ($F, 'repeat', 'info', 'numeric', false, null, false, false, null, null, null, null, null, null, 79, $cas1);
-			self::updateCmd ($F, 'shuffle', 'info', 'numeric', false, null, false, false, null, null, null, null, null, null, 79, $cas1);
-			self::updateCmd ($F, 'repeaton', 'action', 'other', false, 'Repeat On', true, true, null, null, 'alexaapi::repeat', 'command?command=repeat&value=on', null, null, 21, $cas1);			
-			self::updateCmd ($F, 'repeatoff', 'action', 'other', false, 'Repeat Off', true, true, null, null, 'alexaapi::repeat', 'command?command=repeat&value=off', null, null, 21, $cas1); //fas fa-redo" style="opacity:0.3
-			self::updateCmd ($F, 'shuffleon', 'action', 'other', false, 'Shuffle On', true, true, 'fas fa-random', null, 'alexaapi::shuffle', 'command?command=shuffle&value=on', null, null, 22, $cas1);			
-			self::updateCmd ($F, 'shuffleoff', 'action', 'other', false, 'Shuffle Off', true, true, 'fas fa-random" style="opacity:0.3', null, 'alexaapi::shuffle', 'command?command=shuffle&value=off', null, null, 22, $cas1);		//self::updateCmd ($F, 'rwd', 'action', 'other', false, 'Rwd', true, true, 'fa fa-fast-backard', null, null, 'command?command=rwd', null, null, 80, $cas1);
+			self::updateCmd ($F, 'repeat', 'info', 'numeric', false, null, false, false, null, null, null, null, null, null, 79, $cas1ter);
+			self::updateCmd ($F, 'shuffle', 'info', 'numeric', false, null, false, false, null, null, null, null, null, null, 79, $cas1ter);
+			self::updateCmd ($F, 'repeaton', 'action', 'other', false, 'Repeat On', true, true, null, null, 'alexaapi::repeat', 'command?command=repeat&value=on', null, null, 21, $cas1ter);			
+			self::updateCmd ($F, 'repeatoff', 'action', 'other', false, 'Repeat Off', true, true, null, null, 'alexaapi::repeat', 'command?command=repeat&value=off', null, null, 21, $cas1ter); //fas fa-redo" style="opacity:0.3
+			self::updateCmd ($F, 'shuffleon', 'action', 'other', false, 'Shuffle On', true, true, 'fas fa-random', null, 'alexaapi::shuffle', 'command?command=shuffle&value=on', null, null, 22, $cas1ter);			
+			self::updateCmd ($F, 'shuffleoff', 'action', 'other', false, 'Shuffle Off', true, true, 'fas fa-random" style="opacity:0.3', null, 'alexaapi::shuffle', 'command?command=shuffle&value=off', null, null, 22, $cas1ter);		//self::updateCmd ($F, 'rwd', 'action', 'other', false, 'Rwd', true, true, 'fa fa-fast-backard', null, null, 'command?command=rwd', null, null, 80, $cas1);
 			//self::updateCmd ($F, 'multiplenext', 'action', 'other', false, 'Multiple Next', true, true, 'fa fa-step-forward', null, null, 'multiplenext?text=3', null, null, 19, $cas1);		
 			self::updateCmd ($F, 'providerName', 'info', 'string', false, 'Fournisseur de musique :', true, true, 'loisir-musical7', null, null , null, null, null, 20, $cas1);
 			self::updateCmd ($F, 'contentId', 'info', 'string', false, 'Amazon Music Id', false, true, 'loisir-musical7', null, null , null, null, null, 25, $cas1);			
@@ -227,7 +232,14 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'radio?station=#select#', null, 's2960|Nostalgie;s6617|RTL;s6566|Europe1', 27, $cas1);	
 			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'playmusictrack?trackId=#select#', null, '53bfa26d-f24c-4b13-97a8-8c3debdf06f0|Le chant des sirènes;7b12ee4f-5a69-4390-ad07-00618f32f110|Bella Ciao;7adbb73f-4544-453f-85c9-276f42e79584|Bim Bam toi', 28, $cas1);
 			self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
-			self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, 'fa fa-volume-up', null,'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas5);			
+			self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, 'fa fa-volume-up', null,'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas6);
+			self::updateCmd ($F, '0', 'action', 'other', false, '0', true, true, null, null,null, 'volume?value=0', null, null, 30, $cas9);
+			self::updateCmd ($F, 'volume20', 'action', 'other', false, '20', true, true, null, null,null, 'volume?value=20', null, null, 31, $cas9);
+			self::updateCmd ($F, 'volume40', 'action', 'other', false, '40', true, true, null, null,null, 'volume?value=40', null, null, 32, $cas9);
+			self::updateCmd ($F, 'volume60', 'action', 'other', false, '60', true, true, null, null,null, 'volume?value=60', null, null, 33, $cas9);
+			self::updateCmd ($F, 'volume80', 'action', 'other', false, '80', true, true, null, null,null, 'volume?value=80', null, null, 34, $cas9);
+			self::updateCmd ($F, 'volume100', 'action', 'other', false, '100', true, true, null, null,null, 'volume?value=100', null, null, 35, $cas9);
+			
 			self::updateCmd ($F, 'playlistName', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 79, $widgetPlaylist);
 			self::updateCmd ($F, 'playlisthtml', 'info', 'string', false, null, true, true, null, null, null, null, null, null, 79, $widgetPlaylist);
 			self::updateCmd ($F, 'command', 'action', 'message', false, 'Command', false, true, "fa fa-play-circle", null, null, 'command?command=#select#', null, null, 79, $cas1);		
