@@ -5,20 +5,23 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class alexaamazonmusic extends eqLogic {
 	
 	public static function cron($_eqlogic_id = null) {
-		//log::add('alexaamazonmusic', 'info', ' [--------------------------CRON1--------------------------]');
 		$deamon_info = alexaapi::deamon_info();
-		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
-		if ($r->isDue() && $deamon_info['state'] == 'ok') {
-//				log::add('alexaamazonmusic', 'info', ' [--------------------------CRON2--------------------------]');
+		$r = new Cron\CronExpression('*/17 * * * *', new Cron\FieldFactory);// boucle refresh
+		if ($r->isDue() && $deamon_info['state'] == 'ok') self::cronManuel($_eqlogic_id);
+	}
+	
+	public static function cronManuel($_eqlogic_id = null) {
+		$deamon_info = alexaapi::deamon_info();
+		if ($deamon_info['state'] == 'ok') {
 			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexaamazonmusic', true);
+			config::save("listPlaylistsProchain",time()+1020,"alexaamazonmusic");	
 			foreach ($eqLogics as $alexaamazonmusic) {
-//				log::add('alexaamazonmusic', 'info', ' [--------------------------CRON3 '.$alexaamazonmusic->getName().'--------------------------]');
 				$alexaamazonmusic->refresh(); 				
 				sleep(2);
 			}	
 		}
 	}
-
+	
 	public static function createNewDevice($deviceName, $deviceSerial) {
 		$defaultRoom = intval(config::byKey('defaultParentObject','alexaapi','',true));
 		$newDevice = new alexaamazonmusic();
@@ -86,28 +89,44 @@ class alexaamazonmusic extends eqLogic {
 			$result = curl_exec($ch);
 			curl_close($ch);
 			$_playlists=true;
+			log::add('alexaamazonmusic', 'debug', '* Demande de rafraichissement du Widget '.$this->getName());				
+
 		}
 		else {
 			$_playlists=false;			
 		}
 
 		if ($_playlists) {
-			$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/playlists?device=".$device);
-			$json = json_decode($json, true);	
-			$ListeDesPlaylists = [];
-			foreach ($json as $key => $value) {
-				foreach ($value as $key2 => $playlist) {
-					foreach ($playlist as $key3 => $value2) {
-					$ListeDesPlaylists[]= $value2['playlistId'] . '|' . $value2['title']." (".$value2['trackCount'].")";
-					}	
-				}
-			}		
+			$trouvePlaylist = false;
+			if (config::byKey("listPlaylistsValidFin","alexaamazonmusic",time()+86400) < time()) { // On regarde si on va chercher la playlist sur Amazon ou dans la Config
+				$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/playlists?device=".$device);
+				$json = json_decode($json, true);	
+				$ListeDesPlaylists = [];
+				foreach ($json as $key => $value) {
+					foreach ($value as $key2 => $playlist) {
+						foreach ($playlist as $key3 => $value2) {
+						$ListeDesPlaylists[]= $value2['playlistId'] . '|' . $value2['title']." (".$value2['trackCount'].")";
+						$trouvePlaylist = true;
+						}	
+					}
+				}		
+				$ListeDesPlaylists_string=join(';',$ListeDesPlaylists);
+				config::save("listPlaylists",$ListeDesPlaylists_string,"alexaamazonmusic");		
+				config::save("listPlaylistsValidDebut",time(),"alexaamazonmusic");		
+				config::save("listPlaylistsValidFin",time()+86400,"alexaamazonmusic");					
+				log::add('alexaamazonmusic', 'debug', '* Enregistre Playlists dans Config sur plugin: '.$ListeDesPlaylists_string);
+				$ouRecupPlaylists="Amazon";
+			} else
+			{
+				$ListeDesPlaylists_string=config::byKey("listPlaylistsValidFin","alexaamazonmusic","");
+				if ($ListeDesPlaylists_string!="") $trouvePlaylist = true;
+				$ouRecupPlaylists="Configuation";
+			}
 			$cmd = $this->getCmd(null, 'playList');
-			if (is_object($cmd)) { //Playlists existe on  met à jour la liste des Playlists
-				$cmd->setConfiguration('listValue', join(';',$ListeDesPlaylists));
-				//$this->setConfiguration('listValue', join(';',$ListeDesPlaylists));
+			if (is_object($cmd) && ($trouvePlaylist)){ //Playlists existe on  met à jour la liste des Playlists
+				$cmd->setConfiguration('listValue', $ListeDesPlaylists_string);
 				$cmd->save();
-				log::add('alexaamazonmusic', 'debug', 'Mise à jour de la liste des Playlists de '.$this->getName());
+				log::add('alexaamazonmusic', 'debug', '* Mise à jour de la liste des Playlists de '.$this->getName().' depuis '.$ouRecupPlaylists);
 			}
 		}
 		
