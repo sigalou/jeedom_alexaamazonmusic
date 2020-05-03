@@ -1,10 +1,12 @@
 <?php
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
+
 class alexaamazonmusic extends eqLogic {
 	
 	public static function cron($_eqlogic_id = null) {
-		$r = new Cron\CronExpression('*/15 * * * *', new Cron\FieldFactory);// boucle refresh
+		$deamon_info = alexaapi::deamon_info();
+		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
 		if ($r->isDue() && $deamon_info['state'] == 'ok') {
 			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexaamazonmusic', true);
 			foreach ($eqLogics as $alexaamazonmusic) {
@@ -60,7 +62,8 @@ class alexaamazonmusic extends eqLogic {
 		if ($deamon_info['state'] != 'ok') return false;
 		
 		$devicetype=$this->getConfiguration('devicetype');
-		log::add('alexaamazonmusic', 'info', 'Refresh du device '.$this->getName().' ('.$devicetype.')');
+		log::add('alexaamazonmusic', 'info', '');
+		log::add('alexaamazonmusic', 'info', '   [--------------------------Refresh du device '.$this->getName().' ('.$devicetype.')--------------------------]');
 		$widgetPlayer=($devicetype == "Player");
 		$widgetSmarthome=($devicetype == "Smarthome");
 		$widgetPlaylist=($devicetype == "PlayList");
@@ -99,11 +102,42 @@ class alexaamazonmusic extends eqLogic {
 			$cmd = $this->getCmd(null, 'playList');
 			if (is_object($cmd)) { //Playlists existe on  met à jour la liste des Playlists
 				$cmd->setConfiguration('listValue', join(';',$ListeDesPlaylists));
+				//$this->setConfiguration('listValue', join(';',$ListeDesPlaylists));
 				$cmd->save();
 				log::add('alexaamazonmusic', 'debug', 'Mise à jour de la liste des Playlists de '.$this->getName());
 			}
 		}
+		
+			$cmd = $this->getCmd(null, 'url');
+			if (is_object($cmd)) { //on vérifie si URL existe
+			
+				//$this->checkAndUpdateCmd('url','https://album-art-storage-eu.s3.eu-west-1.amazonaws.com/2c5dbb98a362045796a3128325ce273c032d9aca18bbb690ef05da05f2be91f5_500x500.jpg?response-content-type=image%2Fjpeg&X-Amz-Security-Token=FwoGZXIvYXdzEBwaDH5rluRcVWYXs8DDgCKCAe9YUJTQuHUBxEqVajcT8KjofrtfggxU%2Bss5trLcwXo3C6c2cdI5PDq4CNpZq63nSs3Pyr912Ndvd1mffATQr8E2TdsmYY9NtMQ%2B4yl60q6ngZcw%2FM478Gm1O1g4UEmdvDpkTAun7j8P0Xy4Tuw2QBT6lmaWeIEFoAOuy1AVvLb8Z9sonpW19QUyKFqDn%2Bu6Xc5EPhxUFN%2B77hDsXGXHy%2BkwOUISo7HwxXQQd2ksB3eCjNc%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20200502T184740Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86399&X-Amz-Credential=ASIAZZLLX6KMR5BZEFXL%2F20200502%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Signature=bd8c04eed80268ba7908ba5a3b9d22c8e28c8a027ac377168bebfaf19d0ed4c7');
+				
+				$url=$cmd->execCmd();
+				
+				
+				
+				if (!self::urlExist($url)) {
+							if (file_exists(dirname(__FILE__).'/../../core/config/logourl.png'))
+								$futureURL="plugins/alexaamazonmusic/core/config/logourl.png";	
+							else {
+								$plugin = plugin::byId('alexaamazonmusic');
+								$futureURL=$plugin->getPathImgIcon();
+							}
+				$this->checkAndUpdateCmd('url',$futureURL);
+				log::add('alexaamazonmusic', 'debug', 'Le logo URL est remplacé par : '.$futureURL);				
+				}
+			}
+	
 
+	}
+	
+	public function urlExist($url) {
+	$file_headers = @get_headers($url);
+//	log::add('alexaamazonmusic', 'debug', 'existe test: : '.$file_headers[0]);
+	if($file_headers[0] == 'HTTP/1.1 200 OK') return true;
+	if($file_headers[0] == '') return true; // fichier local
+    return false;
 	}
 	
 	public static function forcerDefaultCmd($_id = null) {
