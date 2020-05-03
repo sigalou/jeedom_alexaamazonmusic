@@ -45,18 +45,12 @@ pre#pre_eventlog {
     <fieldset>
     <legend><i class="icon nature-planet5"></i> {{Playlists Amazon Music}}</legend>
        <div class="form-group">
-        <label class="col-sm-4 control-label">{{Adresse du serveur Amazon}}</label>
+        <label class="col-sm-4 control-label">{{Essai}}</label>
     <div class="col-lg-2">
-        <input class="configKey form-control" data-l1key="amazonserver" placeholder="{{amazon.fr}}" />
+        <input class="configKey form-control" data-l1key="amazonserver" placeholder="{{en test}}" />
     </div>
    </div>
 
-   <div class="form-group">
-    <label class="col-lg-4 control-label">{{Adresse du serveur Alexa (ou Pitangui ou Layla ...)}}</label>
-    <div class="col-lg-2">
-        <input class="configKey form-control" data-l1key="alexaserver" placeholder="{{alexa.amazon.fr}}" />
-    </div>
-</div>
 </fieldset>
 </form>
 
