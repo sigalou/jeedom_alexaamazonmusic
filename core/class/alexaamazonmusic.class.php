@@ -76,7 +76,7 @@ class alexaamazonmusic extends eqLogic {
 		$device=str_replace("_player", "", $this->getConfiguration('serial'));
 
 		if ($widgetPlayer) {	// Refresh d'un player
-			$url = network::getNetworkAccess('internal'). "/plugins/alexaapi/core/php/jeealexaapi.php?apikey=".jeedom::getApiKey('alexaapi')."&nom=refreshPlayer"; // Envoyer la commande Refresh 
+			$url = network::getNetworkAccess('internal'). "/plugins/alexaapi/core/php/jeeAlexaapi.php?apikey=".jeedom::getApiKey('alexaapi')."&nom=refreshPlayer"; // Envoyer la commande Refresh 
 			$ch = curl_init($url);
 			$data = array(
 				'deviceSerialNumber' => $device,
@@ -477,7 +477,8 @@ class alexaamazonmusicCmd extends cmd {
 		}
 
 		$request = $this->buildRequest($_options);
-		log::add('alexaamazonmusic', 'info', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
+		log::add('alexaamazonmusic', 'debug', '╠═══> Request : '.$request);
+		//log::add('alexaamazonmusic', 'info', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
 		$request_http = new com_http($request);
 		$request_http->setAllowEmptyReponse(true);//Autorise les réponses vides
 		if ($this->getConfiguration('noSslCheck') == 1) $request_http->setNoSslCheck(true);
@@ -535,6 +536,7 @@ class alexaamazonmusicCmd extends cmd {
 					log::add('alexaamazonmusic', 'warning', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' mais non trouvé ! donc ignoré');
 				} 
 		}
+		log::add('alexaamazonmusic', 'info', ' ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
 		return true;
 	}
 
@@ -542,7 +544,9 @@ class alexaamazonmusicCmd extends cmd {
 	private function buildRequest($_options = array()) {
 		if ($this->getType() != 'action') return $this->getConfiguration('request');
 		list($command, $arguments) = explode('?', $this->getConfiguration('request'), 2);
-	log::add('alexaamazonmusic', 'info', '----Command:*'.$command.'* Request:'.json_encode($_options));
+		log::add('alexaamazonmusic', 'info', ' ');
+		log::add('alexaamazonmusic', 'info', ' ╔══════════════════════[command : *'.$command.'* Request:'.json_encode($_options).']═════════════════════════════════════════════════════════');
+		//log::add('alexaamazonmusic', 'info', '----Command:*'.$command.'* Request:'.json_encode($_options));
 		switch ($command) {
 			case 'volume':
 				$request = $this->build_ControledeSliderSelectMessage($_options, '50');
