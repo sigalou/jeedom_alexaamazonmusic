@@ -6,7 +6,7 @@ class alexaamazonmusic extends eqLogic {
 	
 	public static function cron($_eqlogic_id = null) {
 		$deamon_info = alexaapi::deamon_info();
-		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
+		$r = new Cron\CronExpression('*/17 * * * *', new Cron\FieldFactory);// boucle refresh
 		if ($r->isDue() && $deamon_info['state'] == 'ok') self::cronManuel($_eqlogic_id);
 	}
 	
