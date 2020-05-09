@@ -6,7 +6,7 @@ class alexaamazonmusic extends eqLogic {
 	
 	public static function cron($_eqlogic_id = null) {
 		$deamon_info = alexaapi::deamon_info();
-		$r = new Cron\CronExpression('*/17 * * * *', new Cron\FieldFactory);// boucle refresh
+		$r = new Cron\CronExpression('* * * * *', new Cron\FieldFactory);// boucle refresh
 		if ($r->isDue() && $deamon_info['state'] == 'ok') self::cronManuel($_eqlogic_id);
 	}
 	
@@ -68,8 +68,8 @@ class alexaamazonmusic extends eqLogic {
 		if ($deamon_info['state'] != 'ok') return false;
 		
 		$devicetype=$this->getConfiguration('devicetype');
-		log::add('alexaamazonmusic', 'info', '');
-		log::add('alexaamazonmusic', 'info', ' [--------------------------Refresh du device '.$this->getName().' ('.$devicetype.')--------------------------]');
+		log::add('alexaamazonmusic', 'info', ' ');
+		log::add('alexaamazonmusic', 'info', ' ╔══════════════════════[Refresh du device '.$this->getName().' ('.$devicetype.')]═════════════════════════════════════════════════════════');
 		$widgetPlayer=($devicetype == "Player");
 		$widgetSmarthome=($devicetype == "Smarthome");
 		$widgetPlaylist=($devicetype == "PlayList");
@@ -89,7 +89,7 @@ class alexaamazonmusic extends eqLogic {
 			$result = curl_exec($ch);
 			curl_close($ch);
 			$_playlists=true;
-			log::add('alexaamazonmusic', 'debug', '* Demande de rafraichissement du Widget '.$this->getName());				
+			log::add('alexaamazonmusic', 'debug', '╠═ Demande de rafraichissement du Widget '.$this->getName());				
 
 		}
 		else {
@@ -114,11 +114,12 @@ class alexaamazonmusic extends eqLogic {
 				config::save("listPlaylists",$ListeDesPlaylists_string,"alexaamazonmusic");		
 				config::save("listPlaylistsValidDebut",time(),"alexaamazonmusic");		
 				config::save("listPlaylistsValidFin",time()+86400,"alexaamazonmusic");					
-				log::add('alexaamazonmusic', 'debug', '* Enregistre Playlists dans Config sur plugin: '.$ListeDesPlaylists_string);
+				log::add('alexaamazonmusic', 'debug', '╠═ Enregistre Playlists dans Config sur plugin: '.$ListeDesPlaylists_string);
 				$ouRecupPlaylists="Amazon";
 			} else
 			{
-				$ListeDesPlaylists_string=config::byKey("listPlaylistsValidFin","alexaamazonmusic","");
+				$ListeDesPlaylists_string=config::byKey("listPlaylists","alexaamazonmusic","");
+				//log::add('alexaamazonmusic', 'debug', '╚═> ListeDesPlaylists_string : '.$ListeDesPlaylists_string);
 				if ($ListeDesPlaylists_string!="") $trouvePlaylist = true;
 				$ouRecupPlaylists="Configuation";
 			}
@@ -126,7 +127,8 @@ class alexaamazonmusic extends eqLogic {
 			if (is_object($cmd) && ($trouvePlaylist)){ //Playlists existe on  met à jour la liste des Playlists
 				$cmd->setConfiguration('listValue', $ListeDesPlaylists_string);
 				$cmd->save();
-				log::add('alexaamazonmusic', 'debug', '* Mise à jour de la liste des Playlists de '.$this->getName().' depuis '.$ouRecupPlaylists);
+				log::add('alexaamazonmusic', 'debug', '╠═ Mise à jour de la liste des Playlists de '.$this->getName().' depuis '.$ouRecupPlaylists);
+				log::add('alexaamazonmusic', 'debug', '╠═══> contenu : '.$ListeDesPlaylists_string);
 			}
 		}
 		
@@ -154,6 +156,7 @@ class alexaamazonmusic extends eqLogic {
 				}
 			}
 	
+		log::add('alexaamazonmusic', 'info', ' ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
 
 	}
 	
