@@ -150,9 +150,9 @@ class alexaamazonmusic extends eqLogic {
 								$futureURL=$plugin->getPathImgIcon();
 							}
 				$this->checkAndUpdateCmd('url',$futureURL);
-				log::add('alexaamazonmusic', 'debug', 'Le logo URL est remplacé par : '.$futureURL. ' ( au lieu de '.$url);				
-				log::add('alexaamazonmusic', 'debug', 'header donne : '.json_encode(get_headers($url)));				
-				log::add('alexaamazonmusic', 'debug', 'header donne :: '.get_headers($url)[0]);				
+				log::add('alexaamazonmusic', 'debug', '╠═ Le logo URL est remplacé par : '.$futureURL. ' ( au lieu de '.$url);				
+				//log::add('alexaamazonmusic', 'debug', 'header donne : '.json_encode(get_headers($url)));				
+				//log::add('alexaamazonmusic', 'debug', 'header donne :: '.get_headers($url)[0]);				
 				}
 			}
 	
