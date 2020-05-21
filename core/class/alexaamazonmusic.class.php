@@ -98,7 +98,7 @@ class alexaamazonmusic extends eqLogic {
 
 		if ($_playlists) {
 			$trouvePlaylist = false;
-			if (config::byKey("listPlaylistsValidFin","alexaamazonmusic",time()+86400) < time()) { // On regarde si on va chercher la playlist sur Amazon ou dans la Config
+			if (config::byKey("listPlaylistsValidFin","alexaamazonmusic",time()-20) < time()) { // On regarde si on va chercher la playlist sur Amazon ou dans la Config
 				$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/playlists?device=".$device);
 				$json = json_decode($json, true);	
 				$ListeDesPlaylists = [];
