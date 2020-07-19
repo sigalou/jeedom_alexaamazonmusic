@@ -52,6 +52,7 @@ include_file('desktop', 'alexaapi', 'js', 'alexaapi');
 		$listPlaylistsValidDebut = date("d-m-Y H:i:s",config::byKey("listPlaylistsValidDebut","alexaamazonmusic",""));
 		$listPlaylistsValidFin = date("d-m-Y H:i:s",config::byKey("listPlaylistsValidFin","alexaamazonmusic",""));
 		$listPlaylistsProchain = date("d-m-Y H:i:s",config::byKey("listPlaylistsProchain","alexaamazonmusic",""));
+		if (config::byKey("listPlaylistsValidFin","alexaamazonmusic","")=="123") $listPlaylistsValidFin=$listPlaylistsProchain; //si on a appuyé sur Reset
 	
 ?>
 <style>
@@ -80,25 +81,20 @@ pre#pre_eventlog {
         Dernière mise à jour : <?php echo $listPlaylistsValidDebut?>
     </div>
     <div class="col-lg-3">
-        valable jusqu'à  <?php echo $listPlaylistsValidFin?>
-    </div><a class="btn btn-success btn-xs pull-left" id="bt_saveUpdatePlaylists"><i class="fas fa-sync"></i> {{Reset}}</a>
+        sera rechargée le  <?php echo $listPlaylistsValidFin?>
+    </div><a class="btn btn-success btn-xs pull-left" id="bt_saveUpdatePlaylists"><i class="fas fa-sync"></i> {{Avancer la mise à jour}}</a>
 </div>   
-	<div class="form-group">
-    <label class="col-lg-4 control-label">{{CRON}}</label>
-    <div class="col-lg-4">
-        Prochain CRON : <?php echo $listPlaylistsProchain?>
-    </div>
-</div></fieldset>
+</fieldset>
 </form>
           
 
 <script>
 $("#bt_saveUpdatePlaylists").on('click', function (event) {
-console.log("coucou");
-  var el = $(this);
-console.log(el);
+//console.log("coucou");
+  //var el = $(this);
+//console.log(el);
 var heureMaintenant=Math.round(+new Date() / 1000);
-//var heureMaintenant="123";
+var heureMaintenant="123";
   jeedom.config.save({
     plugin : 'alexaamazonmusic',
 //    configuration: {listPlaylistsValidFin: el.attr('data-state')},

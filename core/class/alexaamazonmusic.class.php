@@ -98,7 +98,7 @@ class alexaamazonmusic extends eqLogic {
 
 		if ($_playlists) {
 			$trouvePlaylist = false;
-			if (config::byKey("listPlaylistsValidFin","alexaamazonmusic",time()+86400) < time()) { // On regarde si on va chercher la playlist sur Amazon ou dans la Config
+			if (config::byKey("listPlaylistsValidFin","alexaamazonmusic",time()-20) < time()) { // On regarde si on va chercher la playlist sur Amazon ou dans la Config
 				$json = file_get_contents("http://" . config::byKey('internalAddr') . ":3456/playlists?device=".$device);
 				$json = json_decode($json, true);	
 				$ListeDesPlaylists = [];
@@ -478,21 +478,31 @@ class alexaamazonmusicCmd extends cmd {
 
 		$request = $this->buildRequest($_options);
 		log::add('alexaamazonmusic', 'debug', '╠═══> Request : '.$request);
+		log::add('alexaapi_node', 'debug', '╠═══> 1 : '.$request);
 		//log::add('alexaamazonmusic', 'info', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
 		$request_http = new com_http($request);
+		log::add('alexaapi_node', 'debug', '╠═══> 2 : '.$request);
 		$request_http->setAllowEmptyReponse(true);//Autorise les réponses vides
+		log::add('alexaapi_node', 'debug', '╠═══> 3 : '.$request);
 		if ($this->getConfiguration('noSslCheck') == 1) $request_http->setNoSslCheck(true);
 		if ($this->getConfiguration('doNotReportHttpError') == 1) $request_http->setNoReportError(true);
+		log::add('alexaapi_node', 'debug', '╠═══> 4 : '.$request);
 		if (isset($_options['speedAndNoErrorReport']) && $_options['speedAndNoErrorReport'] == true) {// option non activée 
 			$request_http->setNoReportError(true);
+		log::add('alexaapi_node', 'debug', '╠═══> 5 : '.$request);
 			$request_http->exec(0.1, 1);
+		log::add('alexaapi_node', 'debug', '╠═══> 6 : '.$request);
 			return;
 		}
-		$result = $request_http->exec($this->getConfiguration('timeout', 3), $this->getConfiguration('maxHttpRetry', 3));//Time out à 3s 3 essais
+		log::add('alexaamazonmusic', 'debug', '╠═══> Request : '.$request);
+		
+		$result = $request_http->exec(10,3);//Time out à 10s 3 essais Modifié 04/07/2020
+		//$result = $request_http->exec(10, 0);//Time out à 3s 3 essais
+		//$result = $request_http->exec();//Time out à 3s 3 essais
 		if (!$result) throw new Exception(__('Serveur injoignable', __FILE__));
 		// On traite la valeur de resultat (dans le cas de whennextalarm par exemple)
 		$resultjson = json_decode($result, true);
-		//log::add('alexaamazonmusic', 'info', 'resultjson:'.json_encode($resultjson));
+		//log::add('alexaapi_node', 'info', '9999999999999999999999999999999999999999999999999999999999999999999resultjson:'.json_encode($resultjson));
 					// Ici, on va traiter une commande qui n'a pas été executée correctement (erreur type "Connexion Close")
 						if (isset($resultjson['value'])) $value = $resultjson['value']; else $value="";
 						if (isset($resultjson['detail'])) $detail = $resultjson['detail']; else $detail="";					
@@ -506,7 +516,7 @@ class alexaamazonmusicCmd extends cmd {
 							flush();
 							}	
 						log::add('alexaamazonmusic', 'debug', '**On relance '.$request);
-						$result = $request_http->exec($this->getConfiguration('timeout', 2), $this->getConfiguration('maxHttpRetry', 3));
+						$result = $request_http->exec(10,3);//Time out à 10s 3 essais Modifié 04/07/2020
 						if (!result) throw new Exception(__('Serveur injoignable', __FILE__));
 						$jsonResult = json_decode($json, true);
 						if (!empty($jsonResult)) throw new Exception(__('Echec de l\'execution: ', __FILE__) . '(' . $jsonResult['title'] . ') ' . $jsonResult['detail']);
@@ -574,6 +584,7 @@ class alexaamazonmusicCmd extends cmd {
 		$request = scenarioExpression::setTags($request);
 		if (trim($request) == '') throw new Exception(__('Commande inconnue ou requête vide : ', __FILE__) . print_r($this, true));
 		$device=str_replace("_player", "", $this->getEqLogic()->getConfiguration('serial'));
+		//log::add('alexaamazonmusic_debug', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
 		return 'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device;
 	}
 
