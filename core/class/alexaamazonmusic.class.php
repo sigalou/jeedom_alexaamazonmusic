@@ -3,6 +3,9 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 
 class alexaamazonmusic extends eqLogic {
+		/*     * *************************Attributs pour autoriser les onglets Affichage et Disposition****************************** */
+	public static $_widgetPossibility = array('custom' => true, 'custom::layout' => true);
+	
 	
 	public static function cron($_eqlogic_id = null) {
 		$deamon_info = alexaapi::deamon_info();
@@ -478,20 +481,20 @@ class alexaamazonmusicCmd extends cmd {
 
 		$request = $this->buildRequest($_options);
 		log::add('alexaamazonmusic', 'debug', '╠═══> Request : '.$request);
-		log::add('alexaapi_node', 'debug', '╠═══> 1 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 1 : '.$request);
 		//log::add('alexaamazonmusic', 'info', 'Request : ' . $request);//Request : http://192.168.0.21:3456/volume?value=50&device=G090LF118173117U
 		$request_http = new com_http($request);
-		log::add('alexaapi_node', 'debug', '╠═══> 2 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 2 : '.$request);
 		$request_http->setAllowEmptyReponse(true);//Autorise les réponses vides
-		log::add('alexaapi_node', 'debug', '╠═══> 3 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 3 : '.$request);
 		if ($this->getConfiguration('noSslCheck') == 1) $request_http->setNoSslCheck(true);
 		if ($this->getConfiguration('doNotReportHttpError') == 1) $request_http->setNoReportError(true);
-		log::add('alexaapi_node', 'debug', '╠═══> 4 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 4 : '.$request);
 		if (isset($_options['speedAndNoErrorReport']) && $_options['speedAndNoErrorReport'] == true) {// option non activée 
 			$request_http->setNoReportError(true);
-		log::add('alexaapi_node', 'debug', '╠═══> 5 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 5 : '.$request);
 			$request_http->exec(0.1, 1);
-		log::add('alexaapi_node', 'debug', '╠═══> 6 : '.$request);
+		//log::add('alexaapi_node', 'debug', '╠═══> 6 : '.$request);
 			return;
 		}
 		log::add('alexaamazonmusic', 'debug', '╠═══> Request : '.$request);
