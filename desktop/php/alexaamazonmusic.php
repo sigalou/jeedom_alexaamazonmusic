@@ -118,7 +118,7 @@ $interval = $datetimecreation->diff($datetimeaujourdhui);
 	if ($eqLogic->getConfiguration('devicetype') == "Player") {
 
 		$opacity = ($eqLogic->getIsEnable()) ? '' : ' disableCard';
-		echo '<div class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
+		echo '<div style="position: relative;" class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
 
 		if (($eqLogic->getStatus('online') != 'true')){
 				//echo '<i class="fas fa-power-off" style="color: red;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>';
@@ -179,7 +179,7 @@ $interval = $datetimecreation->diff($datetimeaujourdhui);
 	
 	if ($eqLogic->getConfiguration('devicetype') == "PlayList") {
 		$opacity = ($eqLogic->getIsEnable()) ? '' : ' disableCard';
-		echo '<div class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
+		echo '<div style="position: relative;" class="eqLogicDisplayCard cursor second '.$opacity.'" data-eqLogic_id="'.$eqLogic->getId().'" >';
 
 		if (($eqLogic->getStatus('online') != 'true')){
 				//echo '<i class="fas fa-power-off" style="color: red;text-shadow: 4px 4px 4px #ccc;float:right" title="Offline"></i>';
