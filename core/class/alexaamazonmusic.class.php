@@ -206,6 +206,7 @@ class alexaamazonmusic extends eqLogic {
 					if (!empty($listValue)) $cmd->setConfiguration('listValue', $listValue);
 					$cmd->setConfiguration('RunWhenRefresh', $RunWhenRefresh);				
 					$cmd->setDisplay('title_disable', $title_disable);
+					$cmd->setDisplay('showNameOndashboard', !$title_disable);
 					$cmd->setOrder($Order);
 					//cas particulier
 						if (($LogicalId == 'speak') || ($LogicalId == 'announcement')){
@@ -274,9 +275,15 @@ class alexaamazonmusic extends eqLogic {
 			$cas7=((!$this->hasCapaorFamilyorType("WHA")) && ($this->getConfiguration('devicetype') != "Player") &&(!$this->hasCapaorFamilyorType("FIRE_TV")) && !$widgetSmarthome && (!$this->hasCapaorFamilyorType("AMAZONMOBILEMUSIC_ANDROID")));
 			$cas8=(($this->hasCapaorFamilyorType("turnOff")) && $widgetSmarthome);
 			$cas9=($this->hasCapaorFamilyorType("WHA") && $widgetPlayer);
-
-
 			$false=false;
+			
+
+            // Volume on traite en premier car c'est fonction de WHA
+            if ($cas6) 	self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas6);
+            else        self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', false, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas9);
+
+			
+			
 			self::updateCmd ($F, 'subText2', 'info', 'string', false, null, true, false, null, null, 'alexaapi::subText2', null, null, null, 2, $cas1);
 			self::updateCmd ($F, 'subText1', 'info', 'string', false, null, true, false, null, null, 'alexaapi::title', null, null, null, 4, $cas1);			
 			self::updateCmd ($F, 'url', 'info', 'string', false, null, true, false, null, null, 'alexaapi::image', null, null, null, 5, $cas1);			
@@ -298,7 +305,6 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'radio?station=#select#', null, 's2960|Nostalgie;s6617|RTL;s6566|Europe1', 27, $cas1);	
 			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'playmusictrack?trackId=#select#', null, '53bfa26d-f24c-4b13-97a8-8c3debdf06f0|Le chant des sirènes;7b12ee4f-5a69-4390-ad07-00618f32f110|Bella Ciao;7adbb73f-4544-453f-85c9-276f42e79584|Bim Bam toi', 28, $cas1);
 			self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
-			self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, 'fa fa-volume-up', null,'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas6);
 			self::updateCmd ($F, '0', 'action', 'other', false, '0', true, true, null, null,null, 'volume?value=0', null, null, 30, $cas9);
 			self::updateCmd ($F, 'volume20', 'action', 'other', false, '20', true, true, null, null,null, 'volume?value=20', null, null, 31, $cas9);
 			self::updateCmd ($F, 'volume40', 'action', 'other', false, '40', true, true, null, null,null, 'volume?value=40', null, null, 32, $cas9);
