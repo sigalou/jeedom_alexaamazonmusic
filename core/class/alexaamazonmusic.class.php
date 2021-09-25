@@ -108,7 +108,8 @@ class alexaamazonmusic extends eqLogic {
 				foreach ($json as $key => $value) {
 					foreach ($value as $key2 => $playlist) {
 						foreach ($playlist as $key3 => $value2) {
-						$ListeDesPlaylists[]= $value2['playlistId'] . '|' . $value2['title']." (".$value2['trackCount'].")";
+						//$ListeDesPlaylists[]= $value2['playlistId'] . '|' . $value2['title']." (".$value2['trackCount'].")"; Modif 09/21 Sigalou - Plus ID mais le nom de la playlist
+						$ListeDesPlaylists[]= $value2['title'] . '|' . $value2['title']." (".$value2['trackCount'].")";
 						$trouvePlaylist = true;
 						}	
 					}
@@ -603,6 +604,15 @@ class alexaamazonmusicCmd extends cmd {
 			$lastvolume=$cmd->execCmd();
 		
 		$request = $this->getConfiguration('request');
+		
+		
+		// Rustine dans le cas d'anciennes commandes. Ces commandes ne fonctionnaient plus depuis des modifs d'Amazon - 09/21 Sigalou
+		if ($request=="playlist?playlist=#select#") $request="textCommand?text=Joue+la+playlist+#select#";
+		if ($request=="radio?station=#select#") $request="textCommand?text=Joue+la+station+#select#+sur+TuneIn";
+		log::add('alexaapi', 'info', '---->request:'.$request);
+		
+		
+		
 		//log::add('alexaamazonmusic_node', 'info', '---->Request2:'.$request);
 		//log::add('alexaamazonmusic_node', 'debug', '---->getName:'.$this->getEqLogic()->getCmd(null, 'volumeinfo')->execCmd());
 		if ((isset($_options['slider'])) && ($_options['slider'] == "")) $_options['slider'] = $default;
