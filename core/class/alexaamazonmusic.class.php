@@ -401,16 +401,15 @@ class alexaamazonmusic extends eqLogic {
 
   public function toHtml($_version = 'dashboard') {
 	$replace = $this->preToHtml($_version);
-	if (!is_array($replace)) {
-		return $replace;
-	}	  
 	//log::add('alexaamazonmusic_widget','debug','************Début génération Widget de '.$replace['#logicalId#']);  
 	$typeWidget="alexaapi";	
 	if ((substr($replace['#logicalId#'], -7))=="_player") $typeWidget="alexaapi_player";
 	if ((substr($replace['#logicalId#'], -9))=="_playlist") $typeWidget="alexaapi_playlist";
     if ($typeWidget!="alexaapi_playlist") return parent::toHtml($_version);
 	//log::add('alexaamazonmusic_widget','debug',$typeWidget.'************Début génération Widget de '.$replace['#name#']);        
-
+	if (!is_array($replace)) {
+		return $replace;
+	}
 	$version = jeedom::versionAlias($_version);
 	if ($this->getDisplay('hideOn' . $version) == 1) {
 		return '';
@@ -595,7 +594,7 @@ class alexaamazonmusicCmd extends cmd {
 		$request = scenarioExpression::setTags($request);
 		if (trim($request) == '') throw new Exception(__('Commande inconnue ou requête vide : ', __FILE__) . print_r($this, true));
 		$device=str_replace("_player", "", $this->getEqLogic()->getConfiguration('serial'));
-		//log::add('alexaamazonmusic_debug', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
+		log::add('alexaapi', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
 		return 'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device;
 	}
 
@@ -607,10 +606,24 @@ class alexaamazonmusicCmd extends cmd {
 		$request = $this->getConfiguration('request');
 		
 		
+		//log::add('alexaapi', 'info', '1---->request:'.$request);
 		// Rustine dans le cas d'anciennes commandes. Ces commandes ne fonctionnaient plus depuis des modifs d'Amazon - 09/21 Sigalou
-		if ($request=="playlist?playlist=#select#") $request="textCommand?text=Joue+la+playlist+#select#";
-		if ($request=="radio?station=#select#") $request="textCommand?text=Joue+la+station+#select#+sur+TuneIn";
-		log::add('alexaapi', 'info', '---->request:'.$request);
+		if ($request=="playlist?playlist=#select#") 
+			{
+			$request="textCommand?text=Joue+la+playlist+#select#";
+			if (isset($_options['select'])) $_options['select'] = str_replace(" ", "+", $_options['select']);
+			}			
+		if ($request=="radio?station=#select#") 
+			{
+			$request="textCommand?text=Joue+la+station+#select#+sur+TuneIn";
+			if (isset($_options['select'])) $_options['select'] = str_replace(" ", "+", $_options['select']);
+			}		
+		if ($request=="playmusictrack?trackId=#select#") 
+			{
+			$request="textCommand?text=#select#";
+			if (isset($_options['select'])) $_options['select'] = str_replace(" ", "+", $_options['select']);
+			}
+		//log::add('alexaapi', 'info', '2---->request:'.$request);
 		
 		
 		
