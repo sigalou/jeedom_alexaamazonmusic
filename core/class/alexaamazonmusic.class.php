@@ -594,6 +594,32 @@ class alexaamazonmusicCmd extends cmd {
 		$request = scenarioExpression::setTags($request);
 		if (trim($request) == '') throw new Exception(__('Commande inconnue ou requête vide : ', __FILE__) . print_r($this, true));
 		$device=str_replace("_player", "", $this->getEqLogic()->getConfiguration('serial'));
+		
+//[2021-09-25 15:25:35]DEBUG : ----url:http://192.168.1.21:3456/textCommand?text=Joue+la+playlist+Lionel&device=e8c0d0d753744383bf0af603b49bc154
+//[2021-09-25 15:25:47]DEBUG : ----url:http://192.168.1.21:3456/textCommand?text=Joue+la+playlist+Coralie&device=G0014D05950108UP		
+		if ((strlen($device)>20) && (strpos($request, "textCommand?") !== false))
+		{
+		$groupName=str_replace(" Player", "", $this->getEqLogic()->getName());
+		$groupName=str_replace(" ", "+", $groupName);
+			// C'est un groupe dans une commande textCommand
+		log::add('alexaapi', 'debug', 'C est un groupe device=' . $device);
+		$request=$request."+sur+le+groupe+".$groupName;
+		log::add('alexaapi', 'debug', 'name=' . $deviceName);
+					
+			
+			// Va chercher un device au hasard, mais pas un groupe
+			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexaamazonmusic', true);
+			foreach ($eqLogics as $alexaamazonmusic) {
+				$device=str_replace("_player", "", $alexaamazonmusic->getConfiguration('serial'));
+				//log::add('alexaapi', 'debug', $device); 
+				if (strlen($device)==16) break;
+			}
+		}
+		//log::add('alexaapi', 'debug', 'request=' . $request);
+		
+		
+		
+		
 		log::add('alexaapi', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
 		return 'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device;
 	}
@@ -624,7 +650,6 @@ class alexaamazonmusicCmd extends cmd {
 			if (isset($_options['select'])) $_options['select'] = str_replace(" ", "+", $_options['select']);
 			}
 		//log::add('alexaapi', 'info', '2---->request:'.$request);
-		
 		
 		
 		//log::add('alexaamazonmusic_node', 'info', '---->Request2:'.$request);
