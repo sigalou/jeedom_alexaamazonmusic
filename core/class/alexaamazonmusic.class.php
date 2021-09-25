@@ -303,8 +303,10 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'providerName', 'info', 'string', false, 'Fournisseur de musique :', true, true, 'loisir-musical7', null, null , null, null, null, 20, $cas1);
 			self::updateCmd ($F, 'contentId', 'info', 'string', false, 'Amazon Music Id', false, true, 'loisir-musical7', null, null , null, null, null, 25, $cas1);			
 			self::updateCmd ($F, 'playList', 'action', 'select', false, 'Ecouter une playlist', true, false, null, null, 'alexaapi::list', 'playlist?playlist=#select#', null, 'Lancer Refresh|Lancer Refresh', 26, $cas1);
-			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'radio?station=#select#', null, 's2960|Nostalgie;s6617|RTL;s6566|Europe1', 27, $cas1);	
-			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'playmusictrack?trackId=#select#', null, '53bfa26d-f24c-4b13-97a8-8c3debdf06f0|Le chant des sirènes;7b12ee4f-5a69-4390-ad07-00618f32f110|Bella Ciao;7adbb73f-4544-453f-85c9-276f42e79584|Bim Bam toi', 28, $cas1);
+			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'textCommand?text=Joue+la+station+#select#', null, 'Nostalgie|Nostalgie;Sud+Radio|Sud Radio;NRJ|N.R.J.', 27, $cas1);	
+			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'textCommand?text=#select#', null, 'Petit+papa+no%C3%ABl|Petit Papa Noël;Crazy in love|Crazy in love;Nirvana|Nirvana', 28, $cas1);
+			self::updateCmd ($F, 'mute', 'action', 'other', false, 'Muet On', false, true, 'fas fa-volume-mute', null, 'alexaapi::mute', 'textCommand?text=mute', null, null, 29, $cas1ter);			
+			self::updateCmd ($F, 'unmute', 'action', 'other', false, 'Muet Off', false, true, 'fas fa-volume-off"', null, 'alexaapi::mute', 'textCommand?text=unmute', null, null, 29, $cas1ter);		//self::updateCmd ($F, 'rwd', 'action', 'other', false, 'Rwd', true, true, 'fa fa-fast-backard', null, null, 'command?command=rwd', null, null, 80, $cas1);
 			self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
 			self::updateCmd ($F, '0', 'action', 'other', false, '0', true, true, null, null,null, 'volume?value=0', null, null, 30, $cas9);
 			self::updateCmd ($F, 'volume20', 'action', 'other', false, '20', true, true, null, null,null, 'volume?value=20', null, null, 31, $cas9);
@@ -568,6 +570,9 @@ class alexaamazonmusicCmd extends cmd {
 		log::add('alexaamazonmusic', 'info', ' ╔══════════════════════[command : *'.$command.'* Request:'.json_encode($_options).']═════════════════════════════════════════════════════════');
 		//log::add('alexaamazonmusic', 'info', '----Command:*'.$command.'* Request:'.json_encode($_options));
 		switch ($command) {
+            case 'textCommand':
+                $request = $this->build_ControledeSliderSelectMessage($_options);
+                break;
 			case 'volume':
 				$request = $this->build_ControledeSliderSelectMessage($_options, '50');
 			break;
@@ -578,7 +583,7 @@ class alexaamazonmusicCmd extends cmd {
 				$request = $this->build_ControledeSliderSelectMessage($_options, "53bfa26d-f24c-4b13-97a8-8c3debdf06f0");
 			break;				
 			case 'radio':
-				$request = $this->build_ControledeSliderSelectMessage($_options, 's2960');
+				$request = $this->build_ControledeSliderSelectMessage($_options, 'France+Info');
 			break;
 			case 'command':
 				$request = $this->build_ControledeSliderSelectMessage($_options, 'pause');
@@ -595,16 +600,14 @@ class alexaamazonmusicCmd extends cmd {
 		if (trim($request) == '') throw new Exception(__('Commande inconnue ou requête vide : ', __FILE__) . print_r($this, true));
 		$device=str_replace("_player", "", $this->getEqLogic()->getConfiguration('serial'));
 		
-//[2021-09-25 15:25:35]DEBUG : ----url:http://192.168.1.21:3456/textCommand?text=Joue+la+playlist+Lionel&device=e8c0d0d753744383bf0af603b49bc154
-//[2021-09-25 15:25:47]DEBUG : ----url:http://192.168.1.21:3456/textCommand?text=Joue+la+playlist+Coralie&device=G0014D05950108UP		
-		if ((strlen($device)>20) && (strpos($request, "textCommand?") !== false))
+		if ((strlen($device)>20) && (strpos($request, "textCommand?") !== false)) // On va chercher un device car le serial des groupes ne fonctionne pas.
 		{
 		$groupName=str_replace(" Player", "", $this->getEqLogic()->getName());
 		$groupName=str_replace(" ", "+", $groupName);
 			// C'est un groupe dans une commande textCommand
-		log::add('alexaapi', 'debug', 'C est un groupe device=' . $device);
+		//log::add('alexaapi', 'debug', 'C est un groupe device=' . $device);
 		$request=$request."+sur+le+groupe+".$groupName;
-		log::add('alexaapi', 'debug', 'name=' . $deviceName);
+		//log::add('alexaapi', 'debug', 'name=' . $deviceName);
 					
 			
 			// Va chercher un device au hasard, mais pas un groupe
@@ -616,10 +619,6 @@ class alexaamazonmusicCmd extends cmd {
 			}
 		}
 		//log::add('alexaapi', 'debug', 'request=' . $request);
-		
-		
-		
-		
 		log::add('alexaapi', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
 		return 'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device;
 	}
@@ -641,7 +640,8 @@ class alexaamazonmusicCmd extends cmd {
 			}			
 		if ($request=="radio?station=#select#") 
 			{
-			$request="textCommand?text=Joue+la+station+#select#+sur+TuneIn";
+			//$request="textCommand?text=Joue+la+station+#select#+sur+TuneIn";
+			$request="textCommand?text=Joue+la+station+#select#";
 			if (isset($_options['select'])) $_options['select'] = str_replace(" ", "+", $_options['select']);
 			}		
 		if ($request=="playmusictrack?trackId=#select#") 
