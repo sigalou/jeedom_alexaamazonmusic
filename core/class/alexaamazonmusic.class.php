@@ -303,8 +303,8 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'providerName', 'info', 'string', false, 'Fournisseur de musique :', true, true, 'loisir-musical7', null, null , null, null, null, 20, $cas1);
 			self::updateCmd ($F, 'contentId', 'info', 'string', false, 'Amazon Music Id', false, true, 'loisir-musical7', null, null , null, null, null, 25, $cas1);			
 			self::updateCmd ($F, 'playList', 'action', 'select', false, 'Ecouter une playlist', true, false, null, null, 'alexaapi::list', 'playlist?playlist=#select#', null, 'Lancer Refresh|Lancer Refresh', 26, $cas1);
-			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'textCommand?text=Joue+la+station+#select#', null, 'Nostalgie|Nostalgie;Sud+Radio|Sud Radio;NRJ|N.R.J.', 27, $cas1);	
-			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'textCommand?text=#select#', null, 'Petit+papa+no%C3%ABl|Petit Papa Noël;Crazy in love|Crazy in love;Nirvana|Nirvana', 28, $cas1);
+			self::updateCmd ($F, 'radio', 'action', 'select', false, 'Ecouter une radio', true, false, null, null, 'alexaapi::list', 'radio?station=#select#', null, 'Nostalgie|Nostalgie;Sud+Radio|Sud Radio;NRJ|N.R.J.', 27, $cas1);	
+			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'playmusictrack?trackId=#select#', null, 'Petit+papa+no%C3%ABl|Petit Papa Noël;Crazy in love|Crazy in love;Nirvana|Nirvana', 28, $cas1);
 			self::updateCmd ($F, 'mute', 'action', 'other', false, 'Muet On', false, true, 'fas fa-volume-mute', null, 'alexaapi::mute', 'textCommand?text=mute', null, null, 29, $cas1ter);			
 			self::updateCmd ($F, 'unmute', 'action', 'other', false, 'Muet Off', false, true, 'fas fa-volume-off"', null, 'alexaapi::mute', 'textCommand?text=unmute', null, null, 29, $cas1ter);		//self::updateCmd ($F, 'rwd', 'action', 'other', false, 'Rwd', true, true, 'fa fa-fast-backard', null, null, 'command?command=rwd', null, null, 80, $cas1);
 			self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
@@ -609,17 +609,15 @@ class alexaamazonmusicCmd extends cmd {
 		$request=$request."+sur+le+groupe+".$groupName;
 		//log::add('alexaapi', 'debug', 'name=' . $deviceName);
 					
-			
-			// Va chercher un device au hasard, mais pas un groupe
-			$eqLogics = ($_eqlogic_id !== null) ? array(eqLogic::byId($_eqlogic_id)) : eqLogic::byType('alexaamazonmusic', true);
-			foreach ($eqLogics as $alexaamazonmusic) {
-				$device=str_replace("_player", "", $alexaamazonmusic->getConfiguration('serial'));
-				//log::add('alexaapi', 'debug', $device); 
-				if (strlen($device)==16) break;
-			}
+			$device=config::byKey('defaultDevice','alexaapi','',true);
+			if ($device==""){
+					log::add('alexaamazonmusic', 'warning', ' ╔═══════════════════════════════[Souci de configuration]══════════════════════════════════════════════════════════════');
+					log::add('alexaamazonmusic', 'warning', " ║ La commande n'a pas fonctionné puisqu'aucun appareil n'est défini par défaut dans la configuration");
+					log::add('alexaamazonmusic', 'warning', ' ╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════');
+			}	
 		}
 		//log::add('alexaapi', 'debug', 'request=' . $request);
-		log::add('alexaapi', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
+		log::add('alexaamazonmusic', 'debug', '----url:'.'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device);
 		return 'http://' . config::byKey('internalAddr') . ':3456/' . $request . '&device=' . $device;
 	}
 
