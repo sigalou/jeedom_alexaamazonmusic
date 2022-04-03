@@ -226,6 +226,7 @@ class alexaamazonmusic extends eqLogic {
 						if ($LogicalId=='volume') {
 							$volinfo = $this->getCmd(null, 'volumeinfo'); // il faut que voluminfo soit créé avant volume
 							if (is_object($volinfo)) $cmd->setValue($volinfo->getId());// Lien entre volume et volumeinfo (pas pour les groupes)
+							
 						}	
 						if (($LogicalId=='repeaton') || ($LogicalId=='repeatoff')) {
 							$repeat = $this->getCmd(null, 'repeat');// il faut que repeat soit créé avant repeaton et repeatoff
@@ -280,8 +281,12 @@ class alexaamazonmusic extends eqLogic {
 			
 
             // Volume on traite en premier car c'est fonction de WHA
-            if ($cas6) 	self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas6);
-            else        self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', false, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas9);
+            if ($cas6) 	{
+				self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
+				self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', true, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas6);
+			}
+            else        
+				self::updateCmd ($F, 'volume', 'action', 'slider', false, 'Volume', false, true, null, null, 'alexaapi::volume', 'volume?value=#slider#', null, null, 29, $cas9);
 
 			
 			
@@ -307,7 +312,6 @@ class alexaamazonmusic extends eqLogic {
 			self::updateCmd ($F, 'playMusicTrack', 'action', 'select', false, 'Ecouter une piste musicale', true, false, null, null, 'alexaapi::list', 'playmusictrack?trackId=#select#', null, 'Petit+papa+no%C3%ABl|Petit Papa Noël;Crazy in love|Crazy in love;Nirvana|Nirvana', 28, $cas1);
 			self::updateCmd ($F, 'mute', 'action', 'other', false, 'Muet On', false, true, 'fas fa-volume-mute', null, 'alexaapi::mute', 'textCommand?text=mute', null, null, 29, $cas1ter);			
 			self::updateCmd ($F, 'unmute', 'action', 'other', false, 'Muet Off', false, true, 'fas fa-volume-off"', null, 'alexaapi::mute', 'textCommand?text=unmute', null, null, 29, $cas1ter);		//self::updateCmd ($F, 'rwd', 'action', 'other', false, 'Rwd', true, true, 'fa fa-fast-backard', null, null, 'command?command=rwd', null, null, 80, $cas1);
-			self::updateCmd ($F, 'volumeinfo', 'info', 'string', false, 'Volume Info', false, false, 'fa fa-volume-up', null, null, null, null, null, 30, $cas6);				
 			self::updateCmd ($F, '0', 'action', 'other', false, '0', true, true, null, null,null, 'volume?value=0', null, null, 30, $cas9);
 			self::updateCmd ($F, 'volume20', 'action', 'other', false, '20', true, true, null, null,null, 'volume?value=20', null, null, 31, $cas9);
 			self::updateCmd ($F, 'volume40', 'action', 'other', false, '40', true, true, null, null,null, 'volume?value=40', null, null, 32, $cas9);
