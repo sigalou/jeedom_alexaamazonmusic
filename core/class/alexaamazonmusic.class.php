@@ -72,7 +72,7 @@ class alexaamazonmusic extends eqLogic {
 		
 		$devicetype=$this->getConfiguration('devicetype');
 		log::add('alexaamazonmusic', 'info', ' ');
-		log::add('alexaamazonmusic', 'info', ' ╔══════════════════════[Refresh du device '.$this->getName().' ('.$devicetype.')]═════════════════════════════════════════════════════════');
+		log::add('alexaamazonmusic', 'info', '╔══════════════════════[Refresh du device '.$this->getName().' ('.$devicetype.')]═════════════════════════════════════════════════════════');
 		$widgetPlayer=($devicetype == "Player");
 		$widgetSmarthome=($devicetype == "Smarthome");
 		$widgetPlaylist=($devicetype == "PlayList");
@@ -160,7 +160,7 @@ class alexaamazonmusic extends eqLogic {
 				}
 			}
 	
-		log::add('alexaamazonmusic', 'info', ' ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
+		log::add('alexaamazonmusic', 'info', '╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
 
 	}
 	
@@ -190,6 +190,14 @@ class alexaamazonmusic extends eqLogic {
 				$cmd = $this->getCmd(null, $LogicalId);
 				if ((!is_object($cmd)) || $forceUpdate) {
 					if (!is_object($cmd)) $cmd = new alexaamazonmusicCmd();
+					/*
+					log::add('alexaamazonmusic', 'debug', '*********************************************************');
+					log::add('alexaamazonmusic', 'debug', '**********************updateCmd '.$cmd->getName().'***********************************');
+					log::add('alexaamazonmusic', 'debug', '**********************forceUpdate '.$forceUpdate.'***********************************');
+					log::add('alexaamazonmusic', 'debug', '**********************LogicalId '.$LogicalId.'***********************************');
+					log::add('alexaamazonmusic', 'debug', '**********************Type '.$Type.'***********************************');
+					log::add('alexaamazonmusic', 'debug', '**********************SubType '.$SubType.'***********************************');
+*/
 					$cmd->setType($Type);
 					$cmd->setLogicalId($LogicalId);
 					$cmd->setSubType($SubType);
@@ -239,6 +247,14 @@ class alexaamazonmusic extends eqLogic {
 					
 				}
 				$cmd->save();
+				/*
+					log::add('alexaamazonmusic', 'debug', '**********************SubType '.$SubType.'***********************************');
+					log::add('alexaamazonmusic', 'debug', '**********************SubType '.$cmd->getSubType().'***********************************');
+				
+					log::add('alexaamazonmusic', 'debug', '*********************************************************');
+					log::add('alexaamazonmusic', 'debug', '*');
+
+				*/
 			}
 			catch(Exception $exc) {
 				log::add('alexaamazonmusic', 'error', __('Erreur pour ', __FILE__) . ' : ' . $exc->getMessage());
@@ -562,7 +578,7 @@ class alexaamazonmusicCmd extends cmd {
 					log::add('alexaamazonmusic', 'warning', $LogicalIdCmd.' prévu dans infoName de '.$this->getName().' mais non trouvé ! donc ignoré');
 				} 
 		}
-		log::add('alexaamazonmusic', 'info', ' ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
+		log::add('alexaamazonmusic', 'info', '╚══════════════════════════════════════════════════════════════════════════════════════════════════════════');
 		return true;
 	}
 
@@ -571,7 +587,7 @@ class alexaamazonmusicCmd extends cmd {
 		if ($this->getType() != 'action') return $this->getConfiguration('request');
 		list($command, $arguments) = explode('?', $this->getConfiguration('request'), 2);
 		log::add('alexaamazonmusic', 'info', ' ');
-		log::add('alexaamazonmusic', 'info', ' ╔══════════════════════[command : *'.$command.'* Request:'.json_encode($_options).']═════════════════════════════════════════════════════════');
+		log::add('alexaamazonmusic', 'info', '╔══════════════════════[command : *'.$command.'* Request:'.json_encode($_options).']═════════════════════════════════════════════════════════');
 		//log::add('alexaamazonmusic', 'info', '----Command:*'.$command.'* Request:'.json_encode($_options));
 		switch ($command) {
             case 'textCommand':
