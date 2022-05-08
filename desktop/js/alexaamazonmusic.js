@@ -68,7 +68,6 @@ $('#bt_forcerDefaultCmd').off('click').on('click', function () {
   
 });
 
-
 $('#bt_Lancer').off('click').on('click',function(){
 var tempo=0;
 if(requeteremotevidecache.checked) 
