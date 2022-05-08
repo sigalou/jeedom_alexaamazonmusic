@@ -291,6 +291,9 @@ function addCmdToTable(_cmd)
         tr += '<td>'
         + '<input class="cmdAttr form-control input-sm"';
         tr += ' data-l1key="configuration" data-l2key="request">';
+			if (init(_cmd.subType) == 'select') {
+			tr += '<input class="tooltips cmdAttr form-control input-sm expertModeVisible" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste de valeur|texte séparé par ;}}" title="{{Liste}}">';	
+			}		
     } else {
         tr += '<td>'
     }
