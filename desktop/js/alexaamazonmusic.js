@@ -58,6 +58,8 @@ $('#bt_forcerDefaultCmd').off('click').on('click', function () {
                 }
                 $('#div_alert').showAlert({message: '{{Opération réalisée avec succès}}', level: 'success'});
                 $('.eqLogicDisplayCard[data-eqLogic_id=' + $('.eqLogicAttr[data-l1key=id]').value() + ']').click();
+				jeedomUtils.reloadPagePrompt('{{Equipement réinitialisé à sa configuration par défaut.}}');
+
               }
             });
           

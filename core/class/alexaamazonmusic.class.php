@@ -197,7 +197,7 @@ class alexaamazonmusic extends eqLogic {
 					log::add('alexaamazonmusic', 'debug', '**********************LogicalId '.$LogicalId.'***********************************');
 					log::add('alexaamazonmusic', 'debug', '**********************Type '.$Type.'***********************************');
 					log::add('alexaamazonmusic', 'debug', '**********************SubType '.$SubType.'***********************************');
-*/
+					*/
 					$cmd->setType($Type);
 					$cmd->setLogicalId($LogicalId);
 					$cmd->setSubType($SubType);
